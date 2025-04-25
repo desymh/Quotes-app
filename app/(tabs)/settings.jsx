@@ -1,18 +1,49 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Linking, Switch, ScrollView, SafeAreaView } from 'react-native';
+import React from 'react';
+import {
+  View, Text, StyleSheet, Pressable, Linking, Switch,
+  ScrollView, SafeAreaView, Share, Alert
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../context/ThemeContext';
 
 export default function SettingsScreen() {
-  const [darkMode, setDarkMode] = useState(false);
-
-  const toggleDarkMode = () => setDarkMode(prev => !prev);
+  const { theme, toggleTheme } = useTheme();
+  const darkMode = theme === 'dark';
 
   const handleContact = () => {
-    Linking.openURL('mailto:desy@example.com');
+    Linking.openURL('mailto:desymamluahhimaya@gmail.com');
   };
 
   const handleRateApp = () => {
-    Linking.openURL('https://play.google.com/store/apps/details?id=com.desy.quotes');
+    Alert.alert(
+      'Belum Tersedia',
+      'Fitur rating akan aktif setelah aplikasi tersedia di Play Store.',
+    );
   };
+
+  const handleShareApp = () => {
+    Alert.alert(
+      'Bagikan Aplikasi',
+      'Aplikasi ini mungkin belum tersedia di Play Store. Tetap ingin membagikan link?',
+      [
+        { text: 'Batal', style: 'cancel' },
+        {
+          text: 'Bagikan',
+          onPress: async () => {
+            try {
+              await Share.share({
+                message: 'Yuk coba aplikasi quotes inspiratif ini! 📚 https://play.google.com/store/apps/details?id=com.desy.quotes',
+              });
+            } catch (error) {
+              console.error('Gagal membagikan:', error);
+            }
+          }
+        }
+      ]
+    );
+  };
+  
+  
 
   return (
     <SafeAreaView style={[styles.container, darkMode && styles.darkBackground]}>
@@ -24,34 +55,77 @@ export default function SettingsScreen() {
           <Text style={[styles.sectionTitle, darkMode && styles.textLight]}>Tema</Text>
           <View style={styles.row}>
             <Text style={[styles.sectionText, darkMode && styles.textMuted]}>Mode Gelap</Text>
-            <Switch value={darkMode} onValueChange={toggleDarkMode} />
+            <Switch value={darkMode} onValueChange={toggleTheme} />
           </View>
+          <Text style={[styles.sectionText, darkMode && styles.textMuted]}>
+            Tema saat ini: {darkMode ? 'Gelap' : 'Terang'}
+          </Text>
         </View>
 
         {/* Sumber Kutipan */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, darkMode && styles.textLight]}>Sumber Kutipan</Text>
           <Text style={[styles.sectionText, darkMode && styles.textMuted]}>
-            Quotes diambil dari public API: <Text style={{ fontStyle: 'italic' }}>ZenQuotes.io</Text>
+            Aplikasi ini mengambil kutipan dari API publik <Text style={{ fontStyle: 'italic' }}>ZenQuotes.io</Text>.
+            Semua kutipan digunakan untuk tujuan edukatif dan inspiratif.
           </Text>
         </View>
 
-        {/* Spacer */}
-        <View style={{ height: 30 }} />
+        {/* Tentang Aplikasi */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, darkMode && styles.textLight]}>Tentang Aplikasi</Text>
+          <Text style={[styles.sectionText, darkMode && styles.textMuted]}>
+            Temukan kutipan inspiratif setiap hari dari tokoh-tokoh terkenal dunia.
+            Simpan favoritmu, ubah tampilan terang/gelap, dan bagikan ke orang terdekatmu dengan mudah.
+          </Text>
+        </View>
 
         {/* Lainnya */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, darkMode && styles.textLight]}>Lainnya</Text>
+
           <Pressable style={styles.button} onPress={handleContact}>
-            <Text style={styles.buttonText}>Hubungi Pembuat</Text>
+            <View style={styles.buttonContent}>
+              <Ionicons name="mail-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
+              <Text style={styles.buttonText}>Hubungi Pembuat</Text>
+            </View>
           </Pressable>
+
           <Pressable style={styles.button} onPress={handleRateApp}>
-            <Text style={styles.buttonText}>Beri Rating Aplikasi</Text>
+            <View style={styles.buttonContent}>
+              <Ionicons name="star-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
+              <Text style={styles.buttonText}>Beri Rating Aplikasi</Text>
+            </View>
+          </Pressable>
+
+          <Pressable style={styles.button} onPress={handleShareApp}>
+            <View style={styles.buttonContent}>
+              <Ionicons name="share-social-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
+              <Text style={styles.buttonText}>Bagikan Aplikasi</Text>
+            </View>
           </Pressable>
         </View>
+
+        {/* Lisensi */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, darkMode && styles.textLight]}>Lisensi</Text>
+          <Text style={[styles.sectionText, darkMode && styles.textMuted]}>
+            Konten kutipan diambil dari sumber terbuka dan dimanfaatkan untuk pembelajaran serta inspirasi.
+            Kami tidak mengklaim kepemilikan atas kutipan tersebut dan menghargai para penulis aslinya.
+          </Text>
+        </View>
+
+        {/* Riwayat Versi */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, darkMode && styles.textLight]}>Riwayat Versi</Text>
+          <Text style={[styles.sectionText, darkMode && styles.textMuted]}>
+            • 1.0.0 - Versi awal: fitur kutipan, favorit, dan mode tema
+          </Text>
+        </View>
+
       </ScrollView>
 
-      {/* Footer tetap di bawah layar */}
+      {/* Footer */}
       <View style={styles.footer}>
         <Text style={[styles.footerText, darkMode && styles.textMuted]}>Versi Aplikasi: 1.0.0</Text>
         <Text style={[styles.footerText, darkMode && styles.textMuted]}>Dibuat oleh: desy_mh</Text>
@@ -70,7 +144,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
-    paddingBottom: 80, // kasih ruang biar gak ketutup footer
+    paddingBottom: 80,
   },
   title: {
     fontSize: 26,
@@ -88,22 +162,30 @@ const styles = StyleSheet.create({
   },
   sectionText: {
     fontSize: 16,
+    lineHeight: 22,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 5,
   },
   button: {
     backgroundColor: '#3498db',
-    padding: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
     borderRadius: 8,
     marginTop: 10,
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
-    textAlign: 'center',
+    fontSize: 15,
   },
   footer: {
     alignItems: 'center',

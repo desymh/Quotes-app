@@ -1,11 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, Alert, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable, Alert } from 'react-native';
 import { useFavorites } from '../context/FavoriteContext';
+import { useTheme } from '../context/ThemeContext'; // ✅ pakai theme global
 import Toast from 'react-native-toast-message';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function FavoriteScreen() {
   const { favorites, removeFromFavorites, clearFavorites } = useFavorites();
+  const { theme } = useTheme();
+  const darkMode = theme === 'dark';
 
   const handleDelete = (item) => {
     Alert.alert(
@@ -52,9 +55,9 @@ export default function FavoriteScreen() {
   };
 
   const renderItem = ({ item }) => (
-    <View style={styles.card}>
-      <Text style={styles.quote}>"{item.quote}"</Text>
-      <Text style={styles.author}>- {item.author}</Text>
+    <View style={[styles.card, darkMode && styles.darkCard]}>
+      <Text style={[styles.quote, darkMode && styles.textWhite]}>"{item.quote}"</Text>
+      <Text style={[styles.author, darkMode && styles.textMuted]}>- {item.author}</Text>
 
       <Pressable style={styles.removeButton} onPress={() => handleDelete(item)}>
         <Text style={styles.removeButtonText}>Hapus</Text>
@@ -63,11 +66,13 @@ export default function FavoriteScreen() {
   );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Favorite Quotes</Text>
+    <View style={[styles.container, darkMode && styles.darkBackground]}>
+      <Text style={[styles.title, darkMode && styles.textWhite]}>Favorite Quotes</Text>
 
       {favorites.length === 0 ? (
-        <Text style={styles.emptyText}>Belum ada quote favorit.</Text>
+        <Text style={[styles.emptyText, darkMode && styles.textMuted]}>
+          Belum ada quote favorit.
+        </Text>
       ) : (
         <FlatList
           data={favorites}
@@ -96,6 +101,9 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 0,
   },
+  darkBackground: {
+    backgroundColor: '#121212',
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -112,6 +120,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
     elevation: 3,
+  },
+  darkCard: {
+    backgroundColor: '#1f1f1f',
   },
   quote: {
     fontSize: 18,
@@ -163,5 +174,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 14,
+  },
+  textWhite: {
+    color: '#fff',
+  },
+  textMuted: {
+    color: '#aaa',
   },
 });
