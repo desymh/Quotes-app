@@ -8,7 +8,8 @@ type Quote = {
 type FavoriteContextType = {
   favorites: Quote[];
   addToFavorites: (quote: Quote) => void;
-  removeFromFavorites: (quote: Quote) => void; // 👈 Tambahkan ini
+  removeFromFavorites: (quote: Quote) => void;
+  clearFavorites: () => void; // ✅ Tambahan fungsi untuk hapus semua
 };
 
 export const FavoriteContext = createContext<FavoriteContextType | undefined>(undefined);
@@ -23,13 +24,16 @@ export const FavoriteProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // 👇 Fungsi hapus favorit
   const removeFromFavorites = (quote: Quote) => {
     setFavorites(favorites.filter((item) => item.quote !== quote.quote));
   };
 
+  const clearFavorites = () => {
+    setFavorites([]); // ✅ Kosongkan semua favorit
+  };
+
   return (
-    <FavoriteContext.Provider value={{ favorites, addToFavorites, removeFromFavorites }}>
+    <FavoriteContext.Provider value={{ favorites, addToFavorites, removeFromFavorites, clearFavorites }}>
       {children}
     </FavoriteContext.Provider>
   );
