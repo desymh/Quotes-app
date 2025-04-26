@@ -7,10 +7,13 @@ import {
   Pressable,
   Animated,
   ImageBackground,
+  SafeAreaView,
+  Dimensions,
 } from 'react-native';
 import axios from 'axios';
 import { useFavorites } from '../context/FavoriteContext';
 import { useTheme } from '../context/ThemeContext';
+import { useLogin } from '../context/LoginContext';
 import Toast from 'react-native-toast-message';
 import { Ionicons } from '@expo/vector-icons';
 import * as Sharing from 'expo-sharing';
@@ -22,14 +25,13 @@ export default function QuotesScreen() {
   const [loading, setLoading] = useState(true);
   const { addToFavorites } = useFavorites();
   const { theme } = useTheme();
+  const { logout } = useLogin();
   const darkMode = theme === 'dark';
 
-  const scaleFavorite = useRef(new Animated.Value(1)).current;
-  const scaleNext = useRef(new Animated.Value(1)).current;
-  const scaleShare = useRef(new Animated.Value(1)).current;
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
   const quoteFade = useRef(new Animated.Value(0)).current;
   const quoteTranslate = useRef(new Animated.Value(10)).current;
+  const viewShotRef = useRef();
 
   const images = [
     require('../../assets/images/bg1.jpg'),
@@ -40,21 +42,6 @@ export default function QuotesScreen() {
     require('../../assets/images/bg6.jpg'),
   ];
   const [backgroundImage, setBackgroundImage] = useState(images[0]);
-  const viewShotRef = useRef();
-
-  const animatePressIn = (anim) => {
-    Animated.spring(anim, {
-      toValue: 0.95,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const animatePressOut = (anim, action) => {
-    Animated.spring(anim, {
-      toValue: 1,
-      useNativeDriver: true,
-    }).start(() => action && action());
-  };
 
   const animateQuote = () => {
     quoteFade.setValue(0);
@@ -72,6 +59,22 @@ export default function QuotesScreen() {
         useNativeDriver: true,
       }),
     ]).start();
+  };
+
+  const fetchQuote = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get('https://dummyjson.com/quotes/random');
+      setQuote(response.data);
+      const randomImage = images[Math.floor(Math.random() * images.length)];
+      setBackgroundImage(randomImage);
+      animateQuote();
+    } catch (error) {
+      console.error('Gagal ambil quote:', error);
+      setQuote({ quote: 'Gagal ambil quote.', author: 'Unknown' });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAddToFavorite = () => {
@@ -107,30 +110,12 @@ export default function QuotesScreen() {
     }
   };
 
-  const fetchQuote = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get('https://dummyjson.com/quotes/random');
-      setQuote(response.data);
-      const randomImage = images[Math.floor(Math.random() * images.length)];
-      setBackgroundImage(randomImage);
-      animateQuote();
-    } catch (error) {
-      console.error('Gagal ambil quote:', error);
-      setQuote({ quote: 'Gagal ambil quote.', author: 'Unknown' });
-    } finally {
-      setLoading(false);
-    }
+  const handleLogout = () => {
+    logout();
   };
 
   useEffect(() => {
     fetchQuote();
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
-
     (async () => {
       const { status } = await MediaLibrary.requestPermissionsAsync();
       if (status !== 'granted') {
@@ -140,129 +125,87 @@ export default function QuotesScreen() {
   }, []);
 
   return (
-    <View style={[styles.container, darkMode && styles.darkBackground]}>
-      <Animated.Text style={[styles.header, darkMode && styles.textWhite, { opacity: fadeAnim }]}>✨ Your Daily Motivation</Animated.Text>
-      <Text style={[styles.subHeader, darkMode && styles.textMuted]}>A little push to brighten your day</Text>
-
+    <SafeAreaView style={[styles.container, darkMode && styles.darkBackground]}>
       {loading ? (
         <ActivityIndicator size="large" color={darkMode ? '#fff' : '#000'} />
       ) : (
-        <>
-          <ViewShot ref={viewShotRef} options={{ format: 'jpg', quality: 0.9 }} style={styles.quoteCard}>
-            <ImageBackground source={backgroundImage} style={styles.quoteCard} imageStyle={{ borderRadius: 20, resizeMode: 'cover' }}>
+        <View style={{ flex: 1 }}>
+          <ViewShot ref={viewShotRef} options={{ format: 'jpg', quality: 0.9 }} style={{ flex: 1 }}>
+            <ImageBackground source={backgroundImage} style={styles.imageBackground}>
               <View style={styles.overlay}>
-                <Animated.Text style={[styles.text, darkMode && styles.textWhite, { opacity: quoteFade, transform: [{ translateY: quoteTranslate }] }]}>"{quote?.quote}"</Animated.Text>
-                <Text style={[styles.author, darkMode && styles.textMuted]}>- {quote?.author}</Text>
+                <Animated.Text
+                  style={[
+                    styles.quoteText,
+                    darkMode && styles.textWhite,
+                    { opacity: quoteFade, transform: [{ translateY: quoteTranslate }] },
+                  ]}
+                >
+                  "{quote?.quote}"
+                </Animated.Text>
+                <Text style={[styles.authorText, darkMode && styles.textMuted]}>- {quote?.author}</Text>
               </View>
             </ImageBackground>
           </ViewShot>
 
-          <View style={styles.buttonContainer}>
-            <Animated.View style={[styles.animatedButton, { transform: [{ scale: scaleFavorite }] }]}>
-              <Pressable
-                onPressIn={() => animatePressIn(scaleFavorite)}
-                onPressOut={() => animatePressOut(scaleFavorite, handleAddToFavorite)}
-                style={styles.pressableButton}
-              >
-                <Ionicons name="heart" size={20} color="#fff" style={{ marginRight: 8 }} />
-                <Text style={styles.pressableText}>Add to Favorite</Text>
-              </Pressable>
-            </Animated.View>
+          {/* Tombol-tombol mengambang */}
+          <View style={styles.buttonBar}>
+            <Pressable style={styles.iconButton} onPress={handleAddToFavorite}>
+              <Ionicons name="heart" size={24} color="#fff" />
+            </Pressable>
 
-            <Animated.View style={[styles.animatedButton, { transform: [{ scale: scaleNext }] }]}>
-              <Pressable
-                onPressIn={() => animatePressIn(scaleNext)}
-                onPressOut={() => animatePressOut(scaleNext, fetchQuote)}
-                style={[styles.pressableButton, { backgroundColor: '#2196F3' }]}
-              >
-                <Ionicons name="refresh" size={20} color="#fff" style={{ marginRight: 8 }} />
-                <Text style={styles.pressableText}>Next Quote</Text>
-              </Pressable>
-            </Animated.View>
+            <Pressable style={styles.iconButton} onPress={fetchQuote}>
+              <Ionicons name="refresh" size={24} color="#fff" />
+            </Pressable>
 
-            <Animated.View style={[styles.animatedButton, { transform: [{ scale: scaleShare }] }]}>
-              <Pressable
-                onPressIn={() => animatePressIn(scaleShare)}
-                onPressOut={() => animatePressOut(scaleShare, handleShare)}
-                style={[styles.pressableButton, { backgroundColor: '#FF9800' }]}
-              >
-                <Ionicons name="share-social" size={20} color="#fff" style={{ marginRight: 8 }} />
-                <Text style={styles.pressableText}>Share</Text>
-              </Pressable>
-            </Animated.View>
+            <Pressable style={styles.iconButton} onPress={handleShare}>
+              <Ionicons name="share-social" size={24} color="#fff" />
+            </Pressable>
 
-            <Animated.View style={[styles.animatedButton, { transform: [{ scale: scaleShare }] }]}>
-              <Pressable
-                onPressIn={() => animatePressIn(scaleShare)}
-                onPressOut={() => animatePressOut(scaleShare, handleSaveToGallery)}
-                style={[styles.pressableButton, { backgroundColor: '#9C27B0' }]}
-              >
-                <Ionicons name="download" size={20} color="#fff" style={{ marginRight: 8 }} />
-                <Text style={styles.pressableText}>Save to Gallery</Text>
-              </Pressable>
-            </Animated.View>
+            <Pressable style={styles.iconButton} onPress={handleSaveToGallery}>
+              <Ionicons name="download" size={24} color="#fff" />
+            </Pressable>
+
+            <Pressable style={styles.iconButton} onPress={handleLogout}>
+              <Ionicons name="log-out" size={24} color="#fff" />
+            </Pressable>
           </View>
-        </>
+        </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
+
+const { height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F0EAD6',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 10,
-    paddingTop: 40,
-    paddingBottom: 20,
   },
   darkBackground: {
     backgroundColor: '#121212',
   },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#222',
-    marginBottom: 4,
-    textAlign: 'center',
-  },
-  subHeader: {
-    fontSize: 16,
-    fontStyle: 'italic',
-    marginBottom: 20,
-    color: '#444',
-    textAlign: 'center',
-  },
-  quoteCard: {
-    width: '100%',
-    height: 400,
-    borderRadius: 20,
-    overflow: 'hidden',
-    marginBottom: 25,
+  imageBackground: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   overlay: {
     flex: 1,
     width: '100%',
-    backgroundColor: 'rgba(0,0,0,0.35)',
     justifyContent: 'center',
-    alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 30,
+    backgroundColor: 'rgba(0,0,0,0.3)',
   },
-  text: {
-    fontSize: 26,
+  quoteText: {
+    fontSize: 28,
     fontStyle: 'italic',
     textAlign: 'center',
     marginBottom: 20,
     color: '#fff',
   },
-  author: {
+  authorText: {
     fontSize: 20,
-    fontWeight: 'bold',
     textAlign: 'center',
     color: '#ddd',
   },
@@ -272,28 +215,21 @@ const styles = StyleSheet.create({
   textMuted: {
     color: '#ccc',
   },
-  buttonContainer: {
-    width: '100%',
-    paddingHorizontal: 30,
-  },
-  animatedButton: {
-    marginBottom: 15,
-    borderRadius: 10,
-    overflow: 'hidden',
-  },
-  pressableButton: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 10,
+  buttonBar: {
+    position: 'absolute',
+    bottom: 30,
+    left: 20,
+    right: 20,
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    borderRadius: 30,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
   },
-  pressableText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
-    textAlign: 'center',
+  iconButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    padding: 12,
+    borderRadius: 50,
   },
 });

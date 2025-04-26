@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { FavoriteProvider } from './context/FavoriteContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
+import { LoginProvider } from './context/LoginContext'; // Tambahkan ini
 import Toast from 'react-native-toast-message';
 
 SplashScreen.preventAutoHideAsync();
@@ -29,6 +30,7 @@ function AppLayout() {
     <NavigationThemeProvider value={theme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="login" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="auto" />
       <Toast />
@@ -40,7 +42,9 @@ export default function RootLayout() {
   return (
     <FavoriteProvider>
       <ThemeProvider>
-        <AppLayout />
+        <LoginProvider>
+          <AppLayout />
+        </LoginProvider>
       </ThemeProvider>
     </FavoriteProvider>
   );

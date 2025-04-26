@@ -53,46 +53,4 @@ Join our community of developers creating universal apps.
 # Quotes-app
 >>>>>>> 7ad5f8e21163ec48f197a87192133484d8665715
  
- # 📱 Quotes App - Aplikasi Motivasi Harian
-
-Aplikasi mobile React Native menggunakan **Expo** dan **Expo Router** yang menampilkan kutipan motivasi secara acak. Kamu bisa menyimpan kutipan favorit, mengganti tema gelap/terang, dan melihat daftar favoritmu kapan saja.
-
----
-
-## 📝 Deskripsi Tugas
-
-Aplikasi ini dibuat untuk memenuhi syarat tugas mata kuliah Mobile Programming dengan ketentuan:
-
-- ✅ Implementasi **Expo Router** untuk navigasi
-- ✅ Konsumsi **API** dari `https://dummyjson.com/quotes/random`
-- ✅ Minimal **3 screen** (Home, Favorites, Settings)
-- ✅ Disain **UI/UX disimpan dalam bentuk JPG/PNG**
-- ✅ Disertai dokumentasi dan struktur proyek yang rapi
-
----
-
-## 🚀 Fitur Utama
-
-- 🔁 Menampilkan kutipan motivasi acak
-- ❤️ Simpan kutipan favorit
-- 📋 Lihat daftar kutipan favorit
-- 🌙 Mode gelap / terang
-- 🧭 Navigasi dengan **Expo Router**
-- ✅ Notifikasi Toast setelah menambah ke favorit
-
----
-
-## 📦 Teknologi Digunakan
-
-- React Native + Expo
-- Expo Router
-- Context API (Favorites & Theme)
-- Axios
-- Toast (react-native-toast-message)
-- ViewShot (opsional screenshot)
-- Custom dark mode theme
-
----
-
-## 📁 Struktur Navigasi (Expo Router)
-
+ 
