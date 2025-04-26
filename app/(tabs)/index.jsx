@@ -14,6 +14,7 @@ import axios from 'axios';
 import { useFavorites } from '../context/FavoriteContext';
 import { useTheme } from '../context/ThemeContext';
 import { useLogin } from '../context/LoginContext';
+import { useRouter } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import { Ionicons } from '@expo/vector-icons';
 import * as Sharing from 'expo-sharing';
@@ -26,6 +27,7 @@ export default function QuotesScreen() {
   const { addToFavorites } = useFavorites();
   const { theme } = useTheme();
   const { logout } = useLogin();
+  const router = useRouter();
   const darkMode = theme === 'dark';
 
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -78,12 +80,14 @@ export default function QuotesScreen() {
   };
 
   const handleAddToFavorite = () => {
-    addToFavorites({ quote: quote?.quote, author: quote?.author });
-    Toast.show({
-      type: 'success',
-      text1: 'Ditambahkan ke Favorit!',
-      text2: 'Quote berhasil disimpan.',
-    });
+    if (quote) {
+      addToFavorites({ quote: quote?.quote, author: quote?.author });
+      Toast.show({
+        type: 'success',
+        text1: 'Ditambahkan ke Favorit!',
+        text2: 'Quote berhasil disimpan.',
+      });
+    }
   };
 
   const handleShare = async () => {
@@ -112,6 +116,7 @@ export default function QuotesScreen() {
 
   const handleLogout = () => {
     logout();
+    router.replace('/login');
   };
 
   useEffect(() => {
@@ -129,8 +134,8 @@ export default function QuotesScreen() {
       {loading ? (
         <ActivityIndicator size="large" color={darkMode ? '#fff' : '#000'} />
       ) : (
-        <View style={{ flex: 1 }}>
-          <ViewShot ref={viewShotRef} options={{ format: 'jpg', quality: 0.9 }} style={{ flex: 1 }}>
+        <>
+          <ViewShot ref={viewShotRef} options={{ format: 'jpg', quality: 0.9 }} style={styles.fullScreen}>
             <ImageBackground source={backgroundImage} style={styles.imageBackground}>
               <View style={styles.overlay}>
                 <Animated.Text
@@ -147,7 +152,6 @@ export default function QuotesScreen() {
             </ImageBackground>
           </ViewShot>
 
-          {/* Tombol-tombol mengambang */}
           <View style={styles.buttonBar}>
             <Pressable style={styles.iconButton} onPress={handleAddToFavorite}>
               <Ionicons name="heart" size={24} color="#fff" />
@@ -169,7 +173,7 @@ export default function QuotesScreen() {
               <Ionicons name="log-out" size={24} color="#fff" />
             </Pressable>
           </View>
-        </View>
+        </>
       )}
     </SafeAreaView>
   );
@@ -181,21 +185,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F0EAD6',
+    justifyContent: 'flex-end',
   },
   darkBackground: {
     backgroundColor: '#121212',
+  },
+  fullScreen: {
+    flex: 1,
   },
   imageBackground: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 20,
   },
   overlay: {
-    flex: 1,
-    width: '100%',
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    padding: 20,
+    borderRadius: 20,
+    alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 20,
-    backgroundColor: 'rgba(0,0,0,0.3)',
   },
   quoteText: {
     fontSize: 28,
@@ -216,19 +225,15 @@ const styles = StyleSheet.create({
     color: '#ccc',
   },
   buttonBar: {
-    position: 'absolute',
-    bottom: 30,
-    left: 20,
-    right: 20,
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    borderRadius: 30,
     paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingBottom: 20,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    backdropFilter: 'blur(10px)', // efek glossy
   },
   iconButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(0,0,0,0.6)',
     padding: 12,
     borderRadius: 50,
   },

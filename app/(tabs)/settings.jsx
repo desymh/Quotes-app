@@ -1,7 +1,15 @@
 import React from 'react';
 import {
-  View, Text, StyleSheet, Pressable, Linking, Switch,
-  ScrollView, SafeAreaView, Share, Alert
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  Linking,
+  Switch,
+  ScrollView,
+  SafeAreaView,
+  Share,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
@@ -15,35 +23,26 @@ export default function SettingsScreen() {
   };
 
   const handleRateApp = () => {
-    Alert.alert(
-      'Belum Tersedia',
-      'Fitur rating akan aktif setelah aplikasi tersedia di Play Store.',
-    );
+    Alert.alert('Belum Tersedia', 'Fitur rating akan aktif setelah aplikasi tersedia di Play Store.');
   };
 
   const handleShareApp = () => {
-    Alert.alert(
-      'Bagikan Aplikasi',
-      'Aplikasi ini mungkin belum tersedia di Play Store. Tetap ingin membagikan link?',
-      [
-        { text: 'Batal', style: 'cancel' },
-        {
-          text: 'Bagikan',
-          onPress: async () => {
-            try {
-              await Share.share({
-                message: 'Yuk coba aplikasi quotes inspiratif ini! 📚 https://play.google.com/store/apps/details?id=com.desy.quotes',
-              });
-            } catch (error) {
-              console.error('Gagal membagikan:', error);
-            }
+    Alert.alert('Bagikan Aplikasi', 'Aplikasi ini mungkin belum tersedia di Play Store. Tetap ingin membagikan link?', [
+      { text: 'Batal', style: 'cancel' },
+      {
+        text: 'Bagikan',
+        onPress: async () => {
+          try {
+            await Share.share({
+              message: 'Yuk coba aplikasi quotes inspiratif ini! \ud83d\udcda https://play.google.com/store/apps/details?id=com.desy.quotes',
+            });
+          } catch (error) {
+            console.error('Gagal membagikan:', error);
           }
-        }
-      ]
-    );
+        },
+      },
+    ]);
   };
-  
-  
 
   return (
     <SafeAreaView style={[styles.container, darkMode && styles.darkBackground]}>
@@ -52,9 +51,8 @@ export default function SettingsScreen() {
 
         {/* Tema */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, darkMode && styles.textLight]}>Tema</Text>
-          <View style={styles.row}>
-            <Text style={[styles.sectionText, darkMode && styles.textMuted]}>Mode Gelap</Text>
+          <View style={styles.rowBetween}>
+            <Text style={[styles.sectionTitle, darkMode && styles.textWhite]}>Mode Gelap</Text>
             <Switch value={darkMode} onValueChange={toggleTheme} />
           </View>
           <Text style={[styles.sectionText, darkMode && styles.textMuted]}>
@@ -64,16 +62,16 @@ export default function SettingsScreen() {
 
         {/* Sumber Kutipan */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, darkMode && styles.textLight]}>Sumber Kutipan</Text>
+          <Text style={[styles.sectionTitle, darkMode && styles.textWhite]}>Sumber Kutipan</Text>
           <Text style={[styles.sectionText, darkMode && styles.textMuted]}>
-            Aplikasi ini mengambil kutipan dari API publik <Text style={{ fontStyle: 'italic' }}>ZenQuotes.io</Text>.
-            Semua kutipan digunakan untuk tujuan edukatif dan inspiratif.
+            Aplikasi ini mengambil kutipan dari API publik{' '}
+            <Text style={{ fontStyle: 'italic' }}>ZenQuotes.io</Text>. Semua kutipan digunakan untuk tujuan edukatif dan inspiratif.
           </Text>
         </View>
 
         {/* Tentang Aplikasi */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, darkMode && styles.textLight]}>Tentang Aplikasi</Text>
+          <Text style={[styles.sectionTitle, darkMode && styles.textWhite]}>Tentang Aplikasi</Text>
           <Text style={[styles.sectionText, darkMode && styles.textMuted]}>
             Temukan kutipan inspiratif setiap hari dari tokoh-tokoh terkenal dunia.
             Simpan favoritmu, ubah tampilan terang/gelap, dan bagikan ke orang terdekatmu dengan mudah.
@@ -82,7 +80,7 @@ export default function SettingsScreen() {
 
         {/* Lainnya */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, darkMode && styles.textLight]}>Lainnya</Text>
+          <Text style={[styles.sectionTitle, darkMode && styles.textWhite]}>Lainnya</Text>
 
           <Pressable style={styles.button} onPress={handleContact}>
             <View style={styles.buttonContent}>
@@ -108,16 +106,16 @@ export default function SettingsScreen() {
 
         {/* Lisensi */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, darkMode && styles.textLight]}>Lisensi</Text>
+          <Text style={[styles.sectionTitle, darkMode && styles.textWhite]}>Lisensi</Text>
           <Text style={[styles.sectionText, darkMode && styles.textMuted]}>
             Konten kutipan diambil dari sumber terbuka dan dimanfaatkan untuk pembelajaran serta inspirasi.
-            Kami tidak mengklaim kepemilikan atas kutipan tersebut dan menghargai para penulis aslinya.
+            Kami menghormati para penulis asli.
           </Text>
         </View>
 
         {/* Riwayat Versi */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, darkMode && styles.textLight]}>Riwayat Versi</Text>
+          <Text style={[styles.sectionTitle, darkMode && styles.textWhite]}>Riwayat Versi</Text>
           <Text style={[styles.sectionText, darkMode && styles.textMuted]}>
             • 1.0.0 - Versi awal: fitur kutipan, favorit, dan mode tema
           </Text>
@@ -158,24 +156,24 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   sectionText: {
     fontSize: 16,
     lineHeight: 22,
   },
-  row: {
+  rowBetween: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 5,
+    marginBottom: 10,
   },
   button: {
     backgroundColor: '#3498db',
     paddingVertical: 12,
     paddingHorizontal: 14,
     borderRadius: 8,
-    marginTop: 10,
+    marginTop: 12,
   },
   buttonContent: {
     flexDirection: 'row',
@@ -196,13 +194,10 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 14,
     color: '#666',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   textWhite: {
     color: '#fff',
-  },
-  textLight: {
-    color: '#ddd',
   },
   textMuted: {
     color: '#aaa',
