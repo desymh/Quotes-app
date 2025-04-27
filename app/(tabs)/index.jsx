@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { Image } from 'react-native';
 import {
   View,
   Text,
@@ -7,6 +8,7 @@ import {
   Pressable,
   Animated,
   ImageBackground,
+  image,
   SafeAreaView,
   Dimensions,
 } from 'react-native';
@@ -81,7 +83,11 @@ export default function QuotesScreen() {
 
   const handleAddToFavorite = () => {
     if (quote) {
-      addToFavorites({ quote: quote?.quote, author: quote?.author });
+      addToFavorites({
+        quote: quote?.quote,
+        author: quote?.author,
+        image: Image.resolveAssetSource(backgroundImage).uri, // tambahkan ini!
+      });
       Toast.show({
         type: 'success',
         text1: 'Ditambahkan ke Favorit!',
@@ -89,7 +95,7 @@ export default function QuotesScreen() {
       });
     }
   };
-
+  
   const handleShare = async () => {
     try {
       const uri = await viewShotRef.current.capture();

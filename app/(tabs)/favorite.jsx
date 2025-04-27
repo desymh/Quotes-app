@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, Alert } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ImageBackground, Pressable, Alert } from 'react-native';
 import { useFavorites } from '../context/FavoriteContext';
-import { useTheme } from '../context/ThemeContext'; // ✅ pakai theme global
+import { useTheme } from '../context/ThemeContext'; 
 import Toast from 'react-native-toast-message';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -56,12 +56,20 @@ export default function FavoriteScreen() {
 
   const renderItem = ({ item }) => (
     <View style={[styles.card, darkMode && styles.darkCard]}>
-      <Text style={[styles.quote, darkMode && styles.textWhite]}>"{item.quote}"</Text>
-      <Text style={[styles.author, darkMode && styles.textMuted]}>- {item.author}</Text>
+      <ImageBackground 
+        source={{ uri: item.image }} 
+        style={styles.imageBackground}
+        imageStyle={{ borderRadius: 12 }}
+      >
+        <View style={styles.overlay}>
+          <Text style={[styles.quote, darkMode && styles.textWhite]}>"{item.quote}"</Text>
+          <Text style={[styles.author, darkMode && styles.textMuted]}>- {item.author}</Text>
+        </View>
 
-      <Pressable style={styles.removeButton} onPress={() => handleDelete(item)}>
-        <Text style={styles.removeButtonText}>Hapus</Text>
-      </Pressable>
+        <Pressable style={styles.deleteIconWrapper} onPress={() => handleDelete(item)}>
+          <Ionicons name="trash-outline" size={18} color="#fff" />
+        </Pressable>
+      </ImageBackground>
     </View>
   );
 
@@ -78,14 +86,14 @@ export default function FavoriteScreen() {
           data={favorites}
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderItem}
-          contentContainerStyle={{ paddingBottom: 100 }}
+          contentContainerStyle={{ paddingBottom: 120 }}
         />
       )}
 
       {favorites.length > 0 && (
         <View style={styles.fixedBottom}>
           <Pressable style={styles.clearButton} onPress={handleClearAll}>
-            <Ionicons name="trash-outline" size={18} color="#fff" />
+            <Ionicons name="trash-bin-outline" size={18} color="#fff" />
             <Text style={styles.clearButtonText}>Hapus Semua Favorit</Text>
           </Pressable>
         </View>
@@ -111,41 +119,43 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   card: {
-    backgroundColor: '#fff',
-    padding: 16,
-    borderRadius: 12,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 3,
   },
-  darkCard: {
-    backgroundColor: '#1f1f1f',
+  imageBackground: {
+    height: 220,
+    justifyContent: 'flex-end',
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  overlay: {
+    backgroundColor: 'rgba(0,0,0,0.4)', // transparan hitam
+    padding: 16,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
   },
   quote: {
     fontSize: 18,
     fontStyle: 'italic',
+    color: '#fff',
     marginBottom: 8,
-    color: '#333',
   },
   author: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#555',
+    color: '#ccc',
+    textAlign: 'right',
   },
-  removeButton: {
-    marginTop: 12,
+  deleteIconWrapper: {
+    position: 'absolute',
+    top: 10,
+    right: 10, // icon di kanan atas
     backgroundColor: '#e74c3c',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    alignSelf: 'flex-start',
-  },
-  removeButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    padding: 8,
+    borderRadius: 999,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
   emptyText: {
     textAlign: 'center',
