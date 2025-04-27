@@ -34,7 +34,7 @@ export default function SettingsScreen() {
         onPress: async () => {
           try {
             await Share.share({
-              message: 'Yuk coba aplikasi quotes inspiratif ini! \ud83d\udcda https://play.google.com/store/apps/details?id=com.desy.quotes',
+              message: 'Yuk coba aplikasi quotes inspiratif ini! 📚 https://play.google.com/store/apps/details?id=com.desy.quotes',
             });
           } catch (error) {
             console.error('Gagal membagikan:', error);
@@ -78,7 +78,24 @@ export default function SettingsScreen() {
           </Text>
         </View>
 
-        {/* Lainnya */}
+        {/* Lisensi */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, darkMode && styles.textWhite]}>Lisensi</Text>
+          <Text style={[styles.sectionText, darkMode && styles.textMuted]}>
+            Konten kutipan diambil dari sumber terbuka dan dimanfaatkan untuk pembelajaran serta inspirasi.
+            Kami menghormati para penulis asli.
+          </Text>
+        </View>
+
+        {/* Riwayat Versi */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, darkMode && styles.textWhite]}>Riwayat Versi</Text>
+          <Text style={[styles.sectionText, darkMode && styles.textMuted]}>
+            • 1.0.0 - Versi awal: fitur kutipan, favorit, dan mode tema
+          </Text>
+        </View>
+
+        {/* Lainnya (Tombol Aksi) */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, darkMode && styles.textWhite]}>Lainnya</Text>
 
@@ -103,24 +120,6 @@ export default function SettingsScreen() {
             </View>
           </Pressable>
         </View>
-
-        {/* Lisensi */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, darkMode && styles.textWhite]}>Lisensi</Text>
-          <Text style={[styles.sectionText, darkMode && styles.textMuted]}>
-            Konten kutipan diambil dari sumber terbuka dan dimanfaatkan untuk pembelajaran serta inspirasi.
-            Kami menghormati para penulis asli.
-          </Text>
-        </View>
-
-        {/* Riwayat Versi */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, darkMode && styles.textWhite]}>Riwayat Versi</Text>
-          <Text style={[styles.sectionText, darkMode && styles.textMuted]}>
-            • 1.0.0 - Versi awal: fitur kutipan, favorit, dan mode tema
-          </Text>
-        </View>
-
       </ScrollView>
 
       {/* Footer */}
