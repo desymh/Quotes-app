@@ -44,6 +44,10 @@ export default function QuotesScreen() {
     require('../../assets/images/bg4.jpg'),
     require('../../assets/images/bg5.jpg'),
     require('../../assets/images/bg6.jpg'),
+    require('../../assets/images/bg5.jpg'),
+    require('../../assets/images/bg6.jpg'),
+    require('../../assets/images/bg7.jpg'),
+    require('../../assets/images/bg8.jpg'),
   ];
   const [backgroundImage, setBackgroundImage] = useState(images[0]);
 
